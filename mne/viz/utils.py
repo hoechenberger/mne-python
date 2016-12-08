@@ -653,6 +653,8 @@ def _plot_raw_onkey(event, params):
     import matplotlib.pyplot as plt
     if event.key == 'escape':
         plt.close(params['fig'])
+        if params['annotation_fig'] is not None:
+            plt.close(params['annotation_fig'])
     elif event.key == 'down':
         if 'fig_selection' in params.keys():
             _change_channel_group(-1, params)
@@ -716,6 +718,8 @@ def _plot_raw_onkey(event, params):
         mng = plt.get_current_fig_manager()
         mng.full_screen_toggle()
     elif event.key == 'a':
+        if 'ica' in params.keys():
+            return
         if params['annotation_fig'] is None:
             from matplotlib.widgets import SpanSelector
             fig = figure_nobar(figsize=(5.5, 0.8))
@@ -739,7 +743,6 @@ def _plot_raw_onkey(event, params):
             hover_callback = partial(_on_hover, params=params)
             params['hover_callback'] = params['fig'].canvas.mpl_connect(
                 'motion_notify_event', hover_callback)
-
         else:
             plt.close(params['annotation_fig'])
 
@@ -1751,7 +1754,7 @@ def _annotation_modify(old_x, new_x, params):
 
 
 class DraggableLine:
-    """Custom mpl line for moving around by drag and drop.
+    """Custom matplotlib line for moving around by drag and drop.
 
     Parameters
     ----------
